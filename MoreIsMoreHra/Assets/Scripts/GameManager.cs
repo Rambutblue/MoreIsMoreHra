@@ -7,19 +7,22 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject[] playerPrefabs;
     [SerializeField]
-    private GameObject vehiclePrefab;
+    private GameObject[] vehiclePrefabs;
     private List<float> lines = new List<float>();
     private float storeX;
     private float spawnDelay = 0;
     private float spawnTime;
 
-    public List<GameObject> pooledObjects;
-    public int amountToPool;
+    public List<GameObject> pooledObjectsLight = new List<GameObject>();
+    public List<GameObject> pooledObjectsMedium = new List<GameObject>();
+    private List<GameObject> pooledObjectsHeavy = new List<GameObject>();
+    [SerializeField]
+    private int amountToPool;
     private void Awake()
     {
-        lines.Add(-7.5f);
+        lines.Add(-9f);
         lines.Add(0f);
-        lines.Add(7.5f);
+        lines.Add(9f);
     }
 
     // Start is called before the first frame update
@@ -28,14 +31,9 @@ public class GameManager : MonoBehaviour
         // ruzny auta pridat
         Instantiate(playerPrefabs[0], Vector3.zero, playerPrefabs[0].transform.rotation);
 
-        pooledObjects = new List<GameObject>();
-        for (int i = 0; i < amountToPool; i++)
-        {
-            GameObject obj = (GameObject)Instantiate(vehiclePrefab);
-            obj.SetActive(false);
-            pooledObjects.Add(obj);
-            obj.transform.SetParent(this.transform);
-        }
+        PoolObjects(pooledObjectsLight, vehiclePrefabs[0]);
+        PoolObjects(pooledObjectsMedium, vehiclePrefabs[1]);
+        PoolObjects(pooledObjectsHeavy, vehiclePrefabs[2]);
     }
 
     // Update is called once per frame
@@ -55,19 +53,48 @@ public class GameManager : MonoBehaviour
         int x = Random.Range(0, lines.Count);
         GameObject vehicle = GetPooledObject();
         vehicle.transform.position = new Vector3(lines[x], 0, 55);
+        vehicle.SetActive(true);
         storeX = lines[x];
         lines.Remove(lines[x]);
         spawnDelay = Random.Range(0.5f, 1);
     }
-    public GameObject GetPooledObject()
+    GameObject GetPooledObject()
     {
-        for (int i = 0; i < pooledObjects.Count; i++)
+        List<GameObject> listObj = null;
+        int x = Random.Range(0, 3);
+        switch (x)
         {
-            if (!pooledObjects[i].activeInHierarchy)
+            case 0:
+                listObj = pooledObjectsLight;
+                break;
+            case 1:
+                listObj = pooledObjectsMedium;
+                break;
+            case 2:
+                listObj = pooledObjectsHeavy;
+                break;
+        }
+        for (int i = 0; i < listObj.Count; i++)
+        {
+            if (!listObj[i].activeInHierarchy)
             {
-                return pooledObjects[i];
+                return listObj[i];
             }
         }
         return null;
+    }
+    void PoolObjects(List<GameObject> list, GameObject vehicle)
+    {
+        for (int i = 0; i < amountToPool; i++)
+        {
+            GameObject obj = (GameObject)Instantiate(vehicle);
+            obj.SetActive(false);
+            list.Add(obj);
+            obj.transform.SetParent(this.transform);
+        }
+    }
+    public void GameOver()
+    {
+
     }
 }

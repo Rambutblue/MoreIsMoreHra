@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CubeMovement : MonoBehaviour
+public abstract class CubeMovement : MonoBehaviour
 {
     private float vehicleSpeed = 20;
-    // Start is called before the first frame update
-    void Start()
+    public int cubeDmg { get; protected set; }
+    private GameManager gameManager;
+    private void Awake()
     {
-        
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -22,6 +23,16 @@ public class CubeMovement : MonoBehaviour
         if (transform.position.z < -55)
         {
             gameObject.SetActive(false);
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Collision");
+        other.GetComponent<PlayerControllerBase>().playerHp -= cubeDmg;
+        if(other.GetComponent<PlayerControllerBase>().playerHp < 0)
+        {
+            gameManager.GameOver();
+            Debug.Log("GameOver");
         }
     }
 }
