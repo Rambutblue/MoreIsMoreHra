@@ -12,12 +12,19 @@ public class GameManager : MonoBehaviour
     private float storeX;
     private float spawnDelay = 0;
     private float spawnTime;
+    public int playerHp;
+    public int playerDmg;
 
-    public List<GameObject> pooledObjectsLight = new List<GameObject>();
-    public List<GameObject> pooledObjectsMedium = new List<GameObject>();
+    private List<GameObject> pooledObjectsLight = new List<GameObject>();
+    private List<GameObject> pooledObjectsMedium = new List<GameObject>();
     private List<GameObject> pooledObjectsHeavy = new List<GameObject>();
     [SerializeField]
     private int amountToPool;
+    [SerializeField]
+    private float SpawnHeight = 10;
+    [SerializeField]
+    private Transform HpParentTransform;
+    private List<GameObject> HpUI = new List<GameObject>();
     private void Awake()
     {
         lines.Add(-9f);
@@ -28,6 +35,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        SetHpUI();
         // ruzny auta pridat
         Instantiate(playerPrefabs[0], Vector3.zero, playerPrefabs[0].transform.rotation);
 
@@ -52,7 +60,7 @@ public class GameManager : MonoBehaviour
         lines.Add(storeX);
         int x = Random.Range(0, lines.Count);
         GameObject vehicle = GetPooledObject();
-        vehicle.transform.position = new Vector3(lines[x], 0, 55);
+        vehicle.transform.position = new Vector3(lines[x], SpawnHeight, 55);
         vehicle.SetActive(true);
         storeX = lines[x];
         lines.Remove(lines[x]);
@@ -93,8 +101,53 @@ public class GameManager : MonoBehaviour
             obj.transform.SetParent(this.transform);
         }
     }
-    public void GameOver()
-    {
 
+    public void PlayerHit()
+    {
+        playerHp -= playerDmg;
+        UpdateHp();
+        if (playerHp <= 0)
+        {
+            GameOver();
+        }
+        else
+        {
+            InactivateAllObstaclesOfType(pooledObjectsLight);
+            InactivateAllObstaclesOfType(pooledObjectsMedium);
+            InactivateAllObstaclesOfType(pooledObjectsHeavy);
+            spawnTime = -1;
+        }
+    }
+    private void GameOver()
+    {
+        Debug.Log("GameOver");
+        Time.timeScale = 0;
+        
+    }
+    private void InactivateAllObstaclesOfType(List<GameObject> list)
+    {
+        for(int i = 0; i < list.Count; i++)
+        {
+            list[i].SetActive(false);
+        }
+    }
+    private void SetHpUI()
+    {
+        HpParentTransform = GameObject.Find("Hp").GetComponent<Transform>();
+        foreach (Transform child in HpParentTransform)
+        {
+            HpUI.Add(child.gameObject);
+        }
+        for (int i = 0; i < playerHp; i++)
+        {
+            HpUI[i].SetActive(true);
+        }
+    }
+    private void UpdateHp()
+    {
+        for (int i = HpUI.Count - 1; i > playerHp - 1; i--)
+        {
+            HpUI[i].SetActive(false);
+        }
     }
 }

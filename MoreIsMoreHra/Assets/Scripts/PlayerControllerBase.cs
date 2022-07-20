@@ -9,11 +9,12 @@ public class PlayerControllerBase : MonoBehaviour
     private float lineSwapSpeed = 75;
     private float[] linesX = { -9, 0, 9 };
     private int currentLine = 1;
-    public int playerHp = 3;
+    private GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
     }
 
     // Update is called once per frame
@@ -49,6 +50,20 @@ public class PlayerControllerBase : MonoBehaviour
             yield return null;
         }
         isSwappingLines = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log(collision.gameObject.tag);
+        /*if (collision.gameObject.tag == "Enemy")
+        {
+            gameManager.PlayerHit();
+        }*/
+        
+    }
+    protected virtual void SetPlayerHp()
+    {
+
     }
     
 }

@@ -5,9 +5,11 @@ using UnityEngine;
 public abstract class CubeMovement : MonoBehaviour
 {
     private float vehicleSpeed = 20;
-    public int cubeDmg { get; protected set; }
+    protected int cubeDmg = 1;
     private GameManager gameManager;
-    private void Awake()
+    private bool isGameManager;
+    
+    private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
@@ -25,14 +27,13 @@ public abstract class CubeMovement : MonoBehaviour
             gameObject.SetActive(false);
         }
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Collision");
-        other.GetComponent<PlayerControllerBase>().playerHp -= cubeDmg;
-        if(other.GetComponent<PlayerControllerBase>().playerHp < 0)
+        if (collision.gameObject.tag == "Player")
         {
-            gameManager.GameOver();
-            Debug.Log("GameOver");
+            gameManager.playerDmg = cubeDmg;
+            gameManager.PlayerHit();
         }
     }
+
 }
