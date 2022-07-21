@@ -6,10 +6,11 @@ public class BgRepeat : MonoBehaviour
 {
     private Vector3 startPos;
     private float repeatLength;
-    private float backgroundspeed = 20;
+    private GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         startPos = transform.position;
         repeatLength = GetComponent<Renderer>().bounds.size.z / 2;
     }
@@ -21,6 +22,6 @@ public class BgRepeat : MonoBehaviour
         {
             transform.position = startPos;
         }
-        transform.Translate(Vector3.back * backgroundspeed * Time.deltaTime);
+        transform.Translate(Vector3.back * gameManager.gameSpeed * Time.deltaTime);
     }
 }

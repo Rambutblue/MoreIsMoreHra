@@ -353,11 +353,14 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
 "Assets/Scripts/BgRepeat.cs"
 "Assets/Scripts/CubeMovement.cs"
+"Assets/Scripts/DataManager.cs"
 "Assets/Scripts/GameManager.cs"
 "Assets/Scripts/HeavyCube.cs"
 "Assets/Scripts/LightCube.cs"
 "Assets/Scripts/MediumCube.cs"
+"Assets/Scripts/MenuManager.cs"
 "Assets/Scripts/PlayerControllerBase.cs"
+"Assets/Scripts/UIButtons.cs"
 -langversion:9.0
 
 /deterministic

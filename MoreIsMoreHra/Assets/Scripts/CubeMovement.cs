@@ -4,7 +4,6 @@ using UnityEngine;
 
 public abstract class CubeMovement : MonoBehaviour
 {
-    private float vehicleSpeed = 20;
     protected int cubeDmg = 1;
     private GameManager gameManager;
     private bool isGameManager;
@@ -17,9 +16,10 @@ public abstract class CubeMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (gameObject.activeInHierarchy)
         {
-            transform.Translate(Vector3.back * vehicleSpeed * Time.deltaTime);
+            transform.Translate(Vector3.back * gameManager.gameSpeed * Time.deltaTime);
         }
         
         if (transform.position.z < -55)

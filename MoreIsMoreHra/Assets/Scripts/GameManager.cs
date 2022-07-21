@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,9 +11,34 @@ public class GameManager : MonoBehaviour
     private GameObject[] vehiclePrefabs;
     private List<float> lines = new List<float>();
     private float storeX;
+
     private float spawnDelay = 0;
     private float spawnTime;
-    public int playerHp;
+
+    public float gameSpeed { get; private set; }
+    private int gameScore;
+    [SerializeField]
+    private float gameSpeedMultiplier;
+    [SerializeField]
+    private float gameScoreMultiplier;
+    public GameObject scoreGameObj;
+
+    [SerializeField]
+    private int _playerHp;
+    private int playerHp
+    {
+        get { return _playerHp; }
+        set {
+            if (value < 0)
+            {
+                _playerHp = 0;
+            }
+            else
+            {
+                _playerHp = value;
+            }
+        }
+    }
     public int playerDmg;
 
     private List<GameObject> pooledObjectsLight = new List<GameObject>();
@@ -22,14 +48,16 @@ public class GameManager : MonoBehaviour
     private int amountToPool;
     [SerializeField]
     private float SpawnHeight = 10;
-    [SerializeField]
     private Transform HpParentTransform;
     private List<GameObject> HpUI = new List<GameObject>();
+
+    public GameObject GameOverMenu;
     private void Awake()
     {
         lines.Add(-9f);
         lines.Add(0f);
         lines.Add(9f);
+        gameSpeed = 20;
     }
 
     // Start is called before the first frame update
@@ -53,6 +81,9 @@ public class GameManager : MonoBehaviour
             VehicleSpawn();
             spawnTime = 0;
         }
+        gameSpeed += gameSpeedMultiplier * Time.deltaTime;
+        gameScore += Mathf.RoundToInt(Time.deltaTime * gameScoreMultiplier);
+        scoreGameObj.GetComponent<TextMeshProUGUI>().text = gameScore.ToString();
     }
 
     void VehicleSpawn()
@@ -106,7 +137,7 @@ public class GameManager : MonoBehaviour
     {
         playerHp -= playerDmg;
         UpdateHp();
-        if (playerHp <= 0)
+        if (playerHp == 0)
         {
             GameOver();
         }
@@ -122,7 +153,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameOver");
         Time.timeScale = 0;
-        
+        GameOverMenu.SetActive(true);
     }
     private void InactivateAllObstaclesOfType(List<GameObject> list)
     {
