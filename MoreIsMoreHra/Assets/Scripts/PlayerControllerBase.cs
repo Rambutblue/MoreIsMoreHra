@@ -2,19 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControllerBase : MonoBehaviour
+public abstract class PlayerControllerBase : MonoBehaviour
 {
     [SerializeField]
     private bool isSwappingLines = false;
     private float lineSwapSpeed = 75;
     private float[] linesX = { -9, 0, 9 };
     private int currentLine = 1;
-    private GameManager gameManager;
+    protected GameManager gameManager;
+    private Animator animator;
+
+    
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
+        SetPlayerHp();
+        animator = GetComponent<Animator>();
+        animator.SetFloat("Speed_f", 1);
+        
     }
 
     // Update is called once per frame
@@ -51,19 +57,7 @@ public class PlayerControllerBase : MonoBehaviour
         }
         isSwappingLines = false;
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log(collision.gameObject.tag);
-        /*if (collision.gameObject.tag == "Enemy")
-        {
-            gameManager.PlayerHit();
-        }*/
-        
-    }
-    protected virtual void SetPlayerHp()
-    {
-
-    }
+    protected abstract void SetPlayerHp();
+    
     
 }

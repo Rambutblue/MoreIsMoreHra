@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     private float spawnTime;
 
     public float gameSpeed { get; private set; }
-    private int gameScore;
+    public int gameScore { get; private set; }
     [SerializeField]
     private float gameSpeedMultiplier;
     [SerializeField]
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private int _playerHp;
-    private int playerHp
+    public int playerHp
     {
         get { return _playerHp; }
         set {
@@ -63,13 +63,20 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetHpUI();
+        
         // ruzny auta pridat
-        Instantiate(playerPrefabs[0], Vector3.zero, playerPrefabs[0].transform.rotation);
+        Instantiate(playerPrefabs[DataManager.instance.charType], Vector3.zero, playerPrefabs[DataManager.instance.charType].transform.rotation);
 
         PoolObjects(pooledObjectsLight, vehiclePrefabs[0]);
         PoolObjects(pooledObjectsMedium, vehiclePrefabs[1]);
         PoolObjects(pooledObjectsHeavy, vehiclePrefabs[2]);
+        StartCoroutine(LateStart());
+    }
+
+    private IEnumerator LateStart()
+    {
+        yield return new WaitForEndOfFrame();
+        SetHpUI();
     }
 
     // Update is called once per frame
@@ -152,6 +159,8 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("GameOver");
+        SaveRunScore();
+        DataManager.instance.SaveData();
         Time.timeScale = 0;
         GameOverMenu.SetActive(true);
     }
@@ -180,5 +189,9 @@ public class GameManager : MonoBehaviour
         {
             HpUI[i].SetActive(false);
         }
+    }
+    public void SaveRunScore()
+    {
+        DataManager.instance.bestSessionScore = gameScore;
     }
 }

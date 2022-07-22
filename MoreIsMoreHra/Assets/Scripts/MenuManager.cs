@@ -10,7 +10,13 @@ public class MenuManager : MonoBehaviour
     private GameObject selectCharacter;
     [SerializeField]
     private GameObject defaultMenu;
+    [SerializeField]
+    private GameObject charLock;
+    [SerializeField]
+    private GameObject charLockText;
 
+    [SerializeField]
+    private GameObject highscoreObj;
 
     [SerializeField]
     private GameObject[] characters;
@@ -20,9 +26,17 @@ public class MenuManager : MonoBehaviour
     private GameObject charName;
     [SerializeField]
     private GameObject charStats;
+    [SerializeField]
     private string[] charNamesArr = { "Basic Farmer", "Advanced Farmer", "Construction Worker" };
+    [SerializeField]
     private string[] charStatsArr = { "Has 3 HP", "Has 5 HP", "Has 10 HP" };
+    [SerializeField]
+    private int[] unlockScores = { 0, 100, 500 };
 
+    private void Start()
+    {
+        highscoreObj.GetComponent<TextMeshProUGUI>().text = DataManager.instance.bestScore.ToString(); 
+    }
 
     public void LeftArrow()
     {
@@ -58,9 +72,17 @@ public class MenuManager : MonoBehaviour
     }
     public void Select()
     {
-        DataManager.instance.charType = currentCharacter;
-        selectCharacter.SetActive(false);
-        defaultMenu.SetActive(true);
+        if (DataManager.instance.bestScore > unlockScores[currentCharacter])
+        {
+            DataManager.instance.charType = currentCharacter;
+            selectCharacter.SetActive(false);
+            defaultMenu.SetActive(true);
+        }
+        else
+        {
+            charLockText.GetComponent<TextMeshProUGUI>().text = "Get atleast " + unlockScores[currentCharacter] + " points to unlock this character";
+            charLock.SetActive(true);
+        }
     }
     public void ToCharSelect()
     {
@@ -70,5 +92,9 @@ public class MenuManager : MonoBehaviour
     public void Play()
     {
         SceneManager.LoadScene(1);
+    }
+    public void CloseLock()
+    {
+        charLock.SetActive(false);
     }
 }

@@ -9,11 +9,6 @@ public class UIButtons : MonoBehaviour
     public GameObject pauseMenu;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -25,6 +20,8 @@ public class UIButtons : MonoBehaviour
     }
     public void Exit()
     {
+        GameObject.Find("GameManager").GetComponent<GameManager>().SaveRunScore();
+        DataManager.instance.SaveData();
         SceneManager.LoadScene(0);
     }
     public void PauseMenuControl()

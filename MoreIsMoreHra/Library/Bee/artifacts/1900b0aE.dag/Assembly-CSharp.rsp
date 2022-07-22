@@ -359,6 +359,9 @@
 "Assets/Scripts/LightCube.cs"
 "Assets/Scripts/MediumCube.cs"
 "Assets/Scripts/MenuManager.cs"
+"Assets/Scripts/Player0.cs"
+"Assets/Scripts/Player1.cs"
+"Assets/Scripts/Player2.cs"
 "Assets/Scripts/PlayerControllerBase.cs"
 "Assets/Scripts/UIButtons.cs"
 -langversion:9.0

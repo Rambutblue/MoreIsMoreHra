@@ -6,7 +6,7 @@ using System.IO;
 public class DataManager : MonoBehaviour
 {
     public static DataManager instance;
-    private int bestSessionScore;
+    public int bestSessionScore;
     public int bestScore;
     public int charType;
 
@@ -21,6 +21,11 @@ public class DataManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        LoadData();
+    }
+    private void Start()
+    {
+        
     }
     class SavedData
     {
@@ -30,13 +35,13 @@ public class DataManager : MonoBehaviour
     {
         if (bestSessionScore > bestScore)
         {
+            bestScore = bestSessionScore;
             SavedData data = new SavedData();
             data.bestScore = bestScore;
 
             string json = JsonUtility.ToJson(data);
 
             File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
-            Debug.Log(Application.persistentDataPath + "/savefile.json");
         }
         
     }
