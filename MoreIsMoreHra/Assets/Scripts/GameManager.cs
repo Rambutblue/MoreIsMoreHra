@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     private List<float> lines = new List<float>();
     private float storeX;
 
-    private float spawnDelay = 0;
+    private float spawnDelay = 0.5f;
     private float spawnTime;
 
     public float gameSpeed { get; private set; }
