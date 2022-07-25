@@ -1868,6 +1868,10 @@ MonoBehaviour:
   - {fileID: 7865537429386299890, guid: f7063472ac75669448c5d83137bf1e0b, type: 3}
   - {fileID: 1749461253809960964, guid: 0351f7fa4366e0d46b57117f3027ba64, type: 3}
   - {fileID: 8183821624882453791, guid: 7222ef0fa8b69554f847dbe2b49c09f2, type: 3}
+  powerupPrefabs:
+  - {fileID: 4797373427000663830, guid: f47f0435533a982438d75d5632d4fcae, type: 3}
+  - {fileID: 5378680240112979417, guid: d16e6553947b87d41b979eee97f34bed, type: 3}
+  spawnTime: 0
   gameSpeedMultiplier: 0.1
   gameScoreMultiplier: 100
   scoreGameObj: {fileID: 2106801240}
@@ -1876,6 +1880,7 @@ MonoBehaviour:
   amountToPool: 10
   SpawnHeight: 10
   GameOverMenu: {fileID: 611292293}
+  isPowerupActive: 0
 --- !u!4 &1189696526
 Transform:
   m_ObjectHideFlags: 0

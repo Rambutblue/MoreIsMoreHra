@@ -9,11 +9,14 @@ public class GameManager : MonoBehaviour
     private GameObject[] playerPrefabs;
     [SerializeField]
     private GameObject[] vehiclePrefabs;
+    [SerializeField]
+    private GameObject[] powerupPrefabs;
+    private List<Renderer> powerupRenderers = new List<Renderer>();
     private List<float> lines = new List<float>();
     private float storeX;
 
     private float spawnDelay = 0.5f;
-    private float spawnTime;
+    public float spawnTime;
 
     public float gameSpeed { get; private set; }
     public int gameScore { get; private set; }
@@ -44,6 +47,7 @@ public class GameManager : MonoBehaviour
     private List<GameObject> pooledObjectsLight = new List<GameObject>();
     private List<GameObject> pooledObjectsMedium = new List<GameObject>();
     private List<GameObject> pooledObjectsHeavy = new List<GameObject>();
+    private List<GameObject> pooledObjectsPowerups = new List<GameObject>();
     [SerializeField]
     private int amountToPool;
     [SerializeField]
@@ -52,6 +56,9 @@ public class GameManager : MonoBehaviour
     private List<GameObject> HpUI = new List<GameObject>();
 
     public GameObject GameOverMenu;
+
+    public bool isPowerupActive;
+
     private void Awake()
     {
         lines.Add(-9f);
@@ -70,6 +77,8 @@ public class GameManager : MonoBehaviour
         PoolObjects(pooledObjectsLight, vehiclePrefabs[0]);
         PoolObjects(pooledObjectsMedium, vehiclePrefabs[1]);
         PoolObjects(pooledObjectsHeavy, vehiclePrefabs[2]);
+        PoolPowerups();
+
         StartCoroutine(LateStart());
     }
 
@@ -85,7 +94,7 @@ public class GameManager : MonoBehaviour
         spawnTime += Time.deltaTime;
         if (spawnTime > spawnDelay)
         {
-            VehicleSpawn();
+            Spawn();
             spawnTime = 0;
         }
         gameSpeed += gameSpeedMultiplier * Time.deltaTime;
@@ -93,13 +102,12 @@ public class GameManager : MonoBehaviour
         scoreGameObj.GetComponent<TextMeshProUGUI>().text = gameScore.ToString();
     }
 
-    void VehicleSpawn()
+    void Spawn()
     {
         lines.Add(storeX);
         int x = Random.Range(0, lines.Count);
         GameObject vehicle = GetPooledObject();
         vehicle.transform.position = new Vector3(lines[x], SpawnHeight, 55);
-        vehicle.SetActive(true);
         storeX = lines[x];
         lines.Remove(lines[x]);
         spawnDelay = Random.Range(0.5f, 1);
@@ -107,26 +115,41 @@ public class GameManager : MonoBehaviour
     GameObject GetPooledObject()
     {
         List<GameObject> listObj = null;
-        int x = Random.Range(0, 3);
-        switch (x)
+        int x = Random.Range(0, 4);
+        if (x == 3 && !isPowerupActive)
         {
-            case 0:
-                listObj = pooledObjectsLight;
-                break;
-            case 1:
-                listObj = pooledObjectsMedium;
-                break;
-            case 2:
-                listObj = pooledObjectsHeavy;
-                break;
+            listObj = pooledObjectsPowerups;
+            int y = Random.Range(0, listObj.Count);
+            Transform poweruptransform = listObj[y].GetComponent<Transform>();
+            PowerupRendererControl(true, poweruptransform);
+            isPowerupActive = true;
+            return listObj[y];
         }
-        for (int i = 0; i < listObj.Count; i++)
+        else
         {
-            if (!listObj[i].activeInHierarchy)
+            x = Random.Range(0, 3);
+            switch (x)
             {
-                return listObj[i];
+                case 0:
+                    listObj = pooledObjectsLight;
+                    break;
+                case 1:
+                    listObj = pooledObjectsMedium;
+                    break;
+                case 2:
+                    listObj = pooledObjectsHeavy;
+                    break;
+            }
+            for (int i = 0; i < listObj.Count; i++)
+            {
+                if (!listObj[i].activeInHierarchy)
+                {
+                    listObj[i].SetActive(true);
+                    return listObj[i];
+                }
             }
         }
+        
         return null;
     }
     void PoolObjects(List<GameObject> list, GameObject vehicle)
@@ -137,6 +160,26 @@ public class GameManager : MonoBehaviour
             obj.SetActive(false);
             list.Add(obj);
             obj.transform.SetParent(this.transform);
+        }
+    }
+
+    void PoolPowerups()
+    {
+        for (int i = 0; i < powerupPrefabs.Length; i++)
+        {
+            GameObject obj = (GameObject)Instantiate(powerupPrefabs[i]);
+            Transform poweruptransform = obj.GetComponent<Transform>();
+            PowerupRendererControl(false, poweruptransform);
+            pooledObjectsPowerups.Add(obj);
+            obj.transform.SetParent(this.transform);
+        }
+    }
+
+    public void PowerupRendererControl(bool activate, Transform transform)
+    {
+        foreach (Transform child in transform)
+        {
+            child.GetComponent<Renderer>().enabled = activate;
         }
     }
 
@@ -194,4 +237,5 @@ public class GameManager : MonoBehaviour
     {
         DataManager.instance.bestSessionScore = gameScore;
     }
+
 }
