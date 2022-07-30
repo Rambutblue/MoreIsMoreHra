@@ -23,13 +23,11 @@ public class DataManager : MonoBehaviour
         }
         LoadData();
     }
-    private void Start()
-    {
-        
-    }
+    
     class SavedData
     {
         public int bestScore;
+        public int charType;
     }
     public void SaveData()
     {
@@ -38,12 +36,20 @@ public class DataManager : MonoBehaviour
             bestScore = bestSessionScore;
             SavedData data = new SavedData();
             data.bestScore = bestScore;
-
+            data.charType = charType;
             string json = JsonUtility.ToJson(data);
 
             File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
-        }
-        
+        } 
+    }
+    public void SaveCharTypeData()
+    {
+        SavedData data = new SavedData();
+        data.charType = charType;
+        data.bestScore = bestScore;
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
     public void LoadData()
     {
@@ -54,6 +60,7 @@ public class DataManager : MonoBehaviour
             SavedData data = JsonUtility.FromJson<SavedData>(json);
 
             bestScore = data.bestScore;
+            charType = data.charType;
         }
 
     }

@@ -5,11 +5,12 @@ using UnityEngine;
 public class PowerupPauseSpawn : PowerupBase
 {
     [SerializeField]
-    private float powerupActiveTime = 1.5f;
-    protected override IEnumerator Powerup()
+    private float powerupActiveTime = 0.75f;
+    protected override void Powerup()
     {
         gameManager.spawnTime = -powerupActiveTime;
-        yield return new WaitForSeconds(powerupActiveTime);
+        gameManager.InactivateAllObstacles();
         gameManager.isPowerupActive = false;
+        isPowerupBoostActive = false;
     }
 }

@@ -31,7 +31,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField]
     private string[] charStatsArr = { "Has 3 HP", "Has 5 HP", "Has 10 HP" };
     [SerializeField]
-    private int[] unlockScores = { 0, 100, 500 };
+    private int[] unlockScores = { 0, 100, 500};
 
     private void Start()
     {
@@ -72,9 +72,10 @@ public class MenuManager : MonoBehaviour
     }
     public void Select()
     {
-        if (DataManager.instance.bestScore > unlockScores[currentCharacter])
+        if (DataManager.instance.bestScore >= unlockScores[currentCharacter])
         {
             DataManager.instance.charType = currentCharacter;
+            DataManager.instance.SaveCharTypeData();
             selectCharacter.SetActive(false);
             defaultMenu.SetActive(true);
         }

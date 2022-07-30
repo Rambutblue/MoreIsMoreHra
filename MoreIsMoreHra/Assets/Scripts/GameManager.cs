@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public float spawnTime;
 
     public float gameSpeed { get; private set; }
+    private float gameScoreFloat;
     public int gameScore { get; private set; }
     [SerializeField]
     private float gameSpeedMultiplier;
@@ -65,13 +66,13 @@ public class GameManager : MonoBehaviour
         lines.Add(0f);
         lines.Add(9f);
         gameSpeed = 20;
+        Time.timeScale = 1;
     }
 
     // Start is called before the first frame update
     void Start()
     {
         
-        // ruzny auta pridat
         Instantiate(playerPrefabs[DataManager.instance.charType], Vector3.zero, playerPrefabs[DataManager.instance.charType].transform.rotation);
 
         PoolObjects(pooledObjectsLight, vehiclePrefabs[0]);
@@ -98,25 +99,26 @@ public class GameManager : MonoBehaviour
             spawnTime = 0;
         }
         gameSpeed += gameSpeedMultiplier * Time.deltaTime;
-        gameScore += Mathf.RoundToInt(Time.deltaTime * gameScoreMultiplier);
+        gameScoreFloat += Time.deltaTime * gameScoreMultiplier;
+        gameScore = Mathf.RoundToInt(gameScoreFloat);
         scoreGameObj.GetComponent<TextMeshProUGUI>().text = gameScore.ToString();
     }
 
     void Spawn()
     {
-        lines.Add(storeX);
+        //lines.Add(storeX);
         int x = Random.Range(0, lines.Count);
         GameObject vehicle = GetPooledObject();
         vehicle.transform.position = new Vector3(lines[x], SpawnHeight, 55);
-        storeX = lines[x];
-        lines.Remove(lines[x]);
+        //storeX = lines[x];
+        //lines.Remove(lines[x]);
         spawnDelay = Random.Range(0.5f, 1);
     }
     GameObject GetPooledObject()
     {
         List<GameObject> listObj = null;
-        int x = Random.Range(0, 4);
-        if (x == 3 && !isPowerupActive)
+        int x = Random.Range(0, 35);
+        if (x == 0 && !isPowerupActive)
         {
             listObj = pooledObjectsPowerups;
             int y = Random.Range(0, listObj.Count);
@@ -167,11 +169,10 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < powerupPrefabs.Length; i++)
         {
-            GameObject obj = (GameObject)Instantiate(powerupPrefabs[i]);
+            GameObject obj = (GameObject)Instantiate(powerupPrefabs[i], new Vector3(0,0,-40), powerupPrefabs[i].transform.rotation, this.transform);
             Transform poweruptransform = obj.GetComponent<Transform>();
             PowerupRendererControl(false, poweruptransform);
             pooledObjectsPowerups.Add(obj);
-            obj.transform.SetParent(this.transform);
         }
     }
 
@@ -193,15 +194,18 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            InactivateAllObstaclesOfType(pooledObjectsLight);
-            InactivateAllObstaclesOfType(pooledObjectsMedium);
-            InactivateAllObstaclesOfType(pooledObjectsHeavy);
-            spawnTime = -1;
+            InactivateAllObstacles();
+            spawnTime = -0.5f;
         }
+    }
+    public void InactivateAllObstacles()
+    {
+        InactivateAllObstaclesOfType(pooledObjectsLight);
+        InactivateAllObstaclesOfType(pooledObjectsMedium);
+        InactivateAllObstaclesOfType(pooledObjectsHeavy);
     }
     private void GameOver()
     {
-        Debug.Log("GameOver");
         SaveRunScore();
         DataManager.instance.SaveData();
         Time.timeScale = 0;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class PlayerControllerBase : MonoBehaviour
 {
@@ -11,7 +12,8 @@ public abstract class PlayerControllerBase : MonoBehaviour
     private int currentLine = 1;
     protected GameManager gameManager;
     private Animator animator;
-
+    private Button leftButton;
+    private Button rightButton;
     
     // Start is called before the first frame update
     void Start()
@@ -20,7 +22,13 @@ public abstract class PlayerControllerBase : MonoBehaviour
         SetPlayerHp();
         animator = GetComponent<Animator>();
         animator.SetFloat("Speed_f", 1);
-        
+#if UNITY_ANDROID
+        GameObject.Find("MobileControls").SetActive(true);
+        leftButton = GameObject.Find("leftButton").GetComponent<Button>();
+        rightButton = GameObject.Find("rightButton").GetComponent<Button>();
+        leftButton.onClick.AddListener(MobileMoveLeft);
+        rightButton.onClick.AddListener(MobileMoveRight);
+#endif
     }
 
     // Update is called once per frame
@@ -33,6 +41,24 @@ public abstract class PlayerControllerBase : MonoBehaviour
             StartCoroutine(MoveLeft());
         }
         if (Input.GetKeyDown(KeyCode.RightArrow) && !isSwappingLines && currentLine < 2)
+        {
+            isSwappingLines = true;
+            currentLine += 1;
+            StartCoroutine(MoveRight());
+        }
+    }
+    void MobileMoveLeft()
+    {
+        if (!isSwappingLines && currentLine > 0)
+        {
+            isSwappingLines = true;
+            currentLine -= 1;
+            StartCoroutine(MoveLeft());
+        }
+    }
+    void MobileMoveRight()
+    {
+        if (!isSwappingLines && currentLine < 2)
         {
             isSwappingLines = true;
             currentLine += 1;
@@ -57,6 +83,7 @@ public abstract class PlayerControllerBase : MonoBehaviour
         }
         isSwappingLines = false;
     }
+    
     protected abstract void SetPlayerHp();
     
     
